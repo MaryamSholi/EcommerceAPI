@@ -12,11 +12,13 @@ namespace Ecommerce.API.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IUnitOfWork<Orders> unitOfWork;
+        private readonly IMapper mapper;
         public ApiResponse response;
 
-        public OrdersController(IUnitOfWork<Orders> unitOfWork)
+        public OrdersController(IUnitOfWork<Orders> unitOfWork, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
+            this.mapper = mapper;
             response = new ApiResponse();
 
         }
@@ -24,7 +26,8 @@ namespace Ecommerce.API.Controllers
         public async Task<ActionResult<ApiResponse>> GetOrdersByUserId(int User_Id)
         {
             var orders = await unitOfWork.ordersRepository.GetAllOrdersByUserId(User_Id);
-            return Ok(orders);
+            var mappedOrders = mapper.Map<IEnumerable<Orders>, IEnumerable<OrdersDTO>>(orders);
+            return Ok(mappedOrders);
         }
     }
 }
